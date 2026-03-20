@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ソシャゲアーカイブ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f3ee;--bg2:#ffffff;--bg3:#ede9e0;
+  --surface:#ffffff;--surface2:#f9f7f3;
+  --border:#e0dbd0;--border2:#c8c0b0;
+  --text:#1a1714;--text2:#5a5248;--text3:#9a8e80;
+  --accent:#c0392b;--accent2:#e67e22;
+  --accentbg:#fdf0ee;--accentborder:#f0c0bb;
+  --blue:#2563ab;--bluebg:#eff6ff;
+  --green:#1a7a45;--greenbg:#f0faf4;--greenborder:#a8dfc0;
+  --endbg:#f5f5f5;--endborder:#d0d0d0;--endtext:#888;
+  --tag-rpg-bg:#fef3e2;--tag-rpg:#b45309;
+  --tag-action-bg:#fde8e8;--tag-action:#b91c1c;
+  --tag-rhythm-bg:#f0e8ff;--tag-rhythm:#7c3aed;
+  --tag-strategy-bg:#e8f4e8;--tag-strategy:#166534;
+  --tag-card-bg:#e8f0ff;--tag-card:#1e40af;
+  --tag-idol-bg:#fde8f5;--tag-idol:#9d174d;
+  --tag-other-bg:#f3f4f6;--tag-other:#374151;
+}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh}
+
+nav{background:var(--bg2);border-bottom:1.5px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;height:56px}
+.nav-logo{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:700;color:var(--accent);cursor:pointer;letter-spacing:0.02em}
+.nav-links{display:flex;gap:4px}
+.nav-btn{background:none;border:none;padding:6px 14px;border-radius:20px;font-family:inherit;font-size:13px;color:var(--text2);cursor:pointer;transition:all 0.2s;font-weight:500}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:var(--accentbg);color:var(--accent);font-weight:700}
+.nav-stats{display:flex;gap:16px;font-size:12px;color:var(--text3)}
+.nav-stats span{font-weight:700;color:var(--accent)}
+
+.page{display:none}.page.active{display:block}
+
+/* TOP */
+.hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:52px 24px 44px;text-align:center}
+.hero-eye{font-size:11px;letter-spacing:0.2em;color:var(--text3);margin-bottom:12px}
+.hero-title{font-family:'Noto Serif JP',serif;font-size:38px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:14px}
+.hero-title em{color:var(--accent);font-style:normal}
+.hero-desc{font-size:14px;color:var(--text2);line-height:1.9;max-width:540px;margin:0 auto 28px}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-p{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 24px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s}
+.btn-p:hover{opacity:0.85}
+.btn-s{background:transparent;color:var(--text2);border:1.5px solid var(--border2);border-radius:8px;padding:10px 24px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+
+.top-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.ts-item{background:var(--bg2);padding:22px;text-align:center}
+.ts-num{font-size:30px;font-weight:700;color:var(--accent);font-family:'Noto Serif JP',serif}
+.ts-label{font-size:11px;color:var(--text3);margin-top:4px;letter-spacing:0.05em}
+
+.top-sec{padding:32px 24px;max-width:940px;margin:0 auto}
+.sec-head{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.sec-head::after{content:"";flex:1;height:1px;background:var(--border)}
+
+.hl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.hl-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.2s;display:flex;gap:14px;align-items:flex-start}
+.hl-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(192,57,43,0.08)}
+.hl-icon{font-size:32px;flex-shrink:0;line-height:1}
+.hl-title{font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3}
+.hl-meta{font-size:11px;color:var(--text3)}
+.hl-sales{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ARCHIVE */
+.controls{padding:14px 24px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sw{flex:1;min-width:180px;position:relative}
+.sw input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 34px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s}
+.sw input:focus{border-color:var(--accent)}
+.sw::before{content:"🔍";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px}
+.fg{display:flex;gap:5px;flex-wrap:wrap}
+.fb{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.2s;font-family:inherit}
+.fb:hover{border-color:var(--border2)}
+.fb.active{background:var(--accentbg);border-color:var(--accent);color:var(--accent);font-weight:700}
+.ss{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-family:inherit;font-size:12px;outline:none;cursor:pointer}
+
+.ab{padding:20px 24px}
+.ri{font-size:12px;color:var(--text3);margin-bottom:16px}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+
+.gc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s}
+.gc:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(192,57,43,0.1);transform:translateY(-2px)}
+.cv{height:120px;display:flex;align-items:center;justify-content:center;position:relative;font-size:42px}
+.cyb{position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.9);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--text2);font-weight:500}
+.cs{position:absolute;top:8px;left:8px;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
+.sa{background:var(--greenbg);color:var(--green);border:1px solid var(--greenborder)}
+.se{background:var(--endbg);color:var(--endtext);border:1px solid var(--endborder)}
+.cb{padding:13px 14px}
+.ct{font-size:13px;font-weight:700;margin-bottom:3px;line-height:1.4}
+.cm{font-size:11px;color:var(--text3);margin-bottom:8px}
+.ctg{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.cd{font-size:12px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cf{padding:9px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3)}
+
+/* TIMELINE */
+.tl-hd{background:var(--bg2);border-bottom:1px solid var(--border);padding:28px 24px;text-align:center}
+.tl-hd h1{font-family:'Noto Serif JP',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:6px}
+.tl-hd p{font-size:13px;color:var(--text2)}
+.tlb{padding:24px;max-width:880px;margin:0 auto}
+.yb{margin-bottom:40px}
+.yl{font-family:'Noto Serif JP',serif;font-size:30px;font-weight:700;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.yl::after{content:"";flex:1;height:2px;background:linear-gradient(to right,var(--accentborder),transparent)}
+.yc{font-size:13px;color:var(--text3);font-weight:400;font-family:'Noto Sans JP',sans-serif}
+.tlc{display:flex;flex-direction:column;gap:10px}
+.tlcard{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.2s;display:flex;gap:14px;align-items:flex-start}
+.tlcard:hover{border-color:var(--accent);box-shadow:0 4px 12px rgba(192,57,43,0.08)}
+.tlic{font-size:28px;flex-shrink:0;margin-top:2px}
+.tlin{flex:1}
+.tlt{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--text)}
+.tlm{font-size:11px;color:var(--text3);margin-bottom:5px}
+.tld{font-size:12px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tlr{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.ov.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:700px;margin:auto;overflow:hidden}
+.mv{height:180px;display:flex;align-items:center;justify-content:center;position:relative;font-size:60px}
+.mc{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.9);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:16px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mb{padding:20px 24px}
+.mtt{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.mmr{display:flex;gap:12px;font-size:12px;color:var(--text3);margin-bottom:10px;flex-wrap:wrap}
+.mtg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.mdesc{font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:18px;padding:14px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accentborder)}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.ib{background:var(--surface2);border-radius:8px;padding:12px 14px;border:1px solid var(--border)}
+.ibl{font-size:10px;color:var(--text3);margin-bottom:4px;letter-spacing:0.05em;font-weight:500}
+.ibv{font-size:13px;color:var(--text);font-weight:500}
+.lr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.el{display:inline-flex;align-items:center;gap:5px;background:var(--bluebg);border:1px solid #bfdbfe;border-radius:6px;padding:6px 12px;font-size:12px;color:var(--blue);text-decoration:none;transition:all 0.2s;font-weight:500}
+.el:hover{background:#dbeafe}
+.scs{display:flex;gap:8px;overflow-x:auto;margin-bottom:18px;padding-bottom:4px}
+.sc{width:180px;height:110px;border-radius:8px;border:1px solid var(--border);object-fit:cover;flex-shrink:0;background:var(--surface2)}
+.mst{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.cmtl{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:220px;overflow-y:auto}
+.ci{background:var(--surface2);border-radius:8px;padding:10px 13px;border:1px solid var(--border)}
+.ca{font-size:11px;color:var(--text3);margin-bottom:3px}
+.cx{font-size:13px;color:var(--text);line-height:1.7}
+.cf2{display:flex;flex-direction:column;gap:7px}
+.cf2 input,.cf2 textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s}
+.cf2 input:focus,.cf2 textarea:focus{border-color:var(--accent)}
+.cf2 textarea{resize:vertical;min-height:70px}
+.csub{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;align-self:flex-end;transition:opacity 0.2s}
+.csub:hover{opacity:0.85}
+
+/* ADMIN */
+.fab{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:22px;cursor:pointer;z-index:150;box-shadow:0 4px 16px rgba(192,57,43,0.3);transition:all 0.2s}
+.fab:hover{transform:scale(1.08)}
+.ap{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:560px;margin:auto;padding:24px}
+.ap h2{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accent)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fc{display:flex;flex-direction:column;gap:4px}
+.ff{margin-bottom:10px;display:flex;flex-direction:column;gap:4px}
+.fl{font-size:11px;color:var(--text3);font-weight:500}
+.fi{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s}
+.fi:focus{border-color:var(--accent)}
+.fbs{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.fcan{background:transparent;border:1px solid var(--border);border-radius:8px;padding:8px 16px;color:var(--text2);font-family:inherit;font-size:13px;cursor:pointer}
+.fok{background:var(--accent);border:none;border-radius:8px;padding:8px 18px;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+
+.vis-rpg{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.vis-card{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.vis-idol{background:linear-gradient(135deg,#fce7f3,#fbcfe8)}
+.vis-action{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+.vis-strategy{background:linear-gradient(135deg,#dcfce7,#bbf7d0)}
+.vis-puzzle{background:linear-gradient(135deg,#e0f2fe,#bae6fd)}
+.vis-rhythm{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.vis-default{background:linear-gradient(135deg,#f3f4f6,#e5e7eb)}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="showPage('top')">ソシャゲアーカイブ</div>
+  <div class="nav-links">
+    <button class="nav-btn active" id="nav-top" onclick="showPage('top')">トップ</button>
+    <button class="nav-btn" id="nav-archive" onclick="showPage('archive')">アーカイブ</button>
+    <button class="nav-btn" id="nav-timeline" onclick="showPage('timeline')">年表</button>
+  </div>
+  <div class="nav-stats">
+    <div><span id="hc">0</span> タイトル</div>
+    <div><span id="hcmt">0</span> 思い出</div>
+  </div>
+</nav>
+
+<!-- TOP -->
+<div class="page active" id="page-top">
+  <div class="hero">
+    <div class="hero-eye">Japanese Social Game Archive</div>
+    <div class="hero-title">日本のソシャゲ、<em>全部残す。</em></div>
+    <div class="hero-desc">2010年以降に日本でリリースされたブラウザ・スマートフォン運用型ゲームを網羅的に記録するアーカイブです。あなたの思い出も、ここに残してください。</div>
+    <div class="hero-btns">
+      <button class="btn-p" onclick="showPage('archive')">アーカイブを見る</button>
+      <button class="btn-s" onclick="showPage('timeline')">年表で見る</button>
+    </div>
+  </div>
+  <div class="top-stats">
+    <div class="ts-item"><div class="ts-num" id="ts1">0</div><div class="ts-label">収録タイトル</div></div>
+    <div class="ts-item"><div class="ts-num" id="ts2">0</div><div class="ts-label">現在運営中</div></div>
+    <div class="ts-item"><div class="ts-num" id="ts3">0</div><div class="ts-label">サービス終了</div></div>
+    <div class="ts-item"><div class="ts-num" id="ts4">0</div><div class="ts-label">投稿された思い出</div></div>
+  </div>
+  <div class="top-sec">
+    <div class="sec-head">注目タイトル</div>
+    <div class="hl-grid" id="hlg"></div>
+  </div>
+  <div class="top-sec">
+    <div class="sec-head">最近投稿された思い出</div>
+    <div id="rcmt"><div style="font-size:13px;color:var(--text3)">まだ思い出が投稿されていません。</div></div>
+  </div>
+</div>
+
+<!-- ARCHIVE -->
+<div class="page" id="page-archive">
+  <div class="controls">
+    <div class="sw"><input type="text" id="search" placeholder="タイトル・発売元で検索..."/></div>
+    <div class="fg" id="gf">
+      <button class="fb active" data-genre="all">すべて</button>
+      <button class="fb" data-genre="RPG">RPG</button>
+      <button class="fb" data-genre="カード">カード</button>
+      <button class="fb" data-genre="アイドル">アイドル</button>
+      <button class="fb" data-genre="アクション">アクション</button>
+      <button class="fb" data-genre="リズム">リズム</button>
+      <button class="fb" data-genre="ストラテジー">ストラテジー</button>
+      <button class="fb" data-genre="育成">育成</button>
+    </div>
+    <select class="ss" id="ss"><option value="year-desc">新しい順</option><option value="year-asc">古い順</option><option value="title">タイトル順</option></select>
+  </div>
+  <div class="ab">
+    <div class="ri" id="ri"></div>
+    <div class="gg" id="gg"></div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="page" id="page-timeline">
+  <div class="tl-hd">
+    <h1>ソシャゲ年表</h1>
+    <p>2010年〜現在まで、リリース年ごとに並べた日本ソシャゲの歴史</p>
+  </div>
+  <div class="tlb" id="tlb"></div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="ov" id="ov">
+  <div class="modal">
+    <div class="mv" id="mv"><button class="mc" id="mc">✕</button><span id="mi"></span></div>
+    <div class="mb">
+      <div class="mtt" id="mtt"></div>
+      <div class="mmr" id="mmr"></div>
+      <div class="mtg" id="mtg"></div>
+      <div class="mdesc" id="mdesc"></div>
+      <div class="ig" id="ig"></div>
+      <div id="ls"></div>
+      <div id="scs"></div>
+      <div class="mst">みんなの思い出</div>
+      <div class="cmtl" id="cmtl"></div>
+      <div class="cf2">
+        <input type="text" id="cn" placeholder="ニックネーム（任意）"/>
+        <textarea id="ct" placeholder="このゲームの思い出を書いてください..."></textarea>
+        <button class="csub" id="csub">投稿する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="ov" id="aov">
+  <div class="ap">
+    <h2>ゲームを追加する</h2>
+    <div class="fr">
+      <div class="fc"><div class="fl">タイトル *</div><input class="fi" id="ft" placeholder="ゲームタイトル"/></div>
+      <div class="fc"><div class="fl">発売元 *</div><input class="fi" id="fm" placeholder="会社名"/></div>
+    </div>
+    <div class="fr">
+      <div class="fc"><div class="fl">リリース年</div><input class="fi" id="fy" type="number" placeholder="2015"/></div>
+      <div class="fc"><div class="fl">ジャンル</div><input class="fi" id="fg2" placeholder="RPG, カードなど"/></div>
+    </div>
+    <div class="fr">
+      <div class="fc"><div class="fl">プラットフォーム</div><input class="fi" id="fp" placeholder="iOS/Android"/></div>
+      <div class="fc"><div class="fl">ステータス</div><select class="fi" id="fst"><option value="active">サービス中</option><option value="ended">サービス終了</option></select></div>
+    </div>
+    <div class="ff"><div class="fl">ゲーム概要</div><textarea class="fi" id="fd" rows="3" placeholder="ゲームの内容・特徴..."></textarea></div>
+    <div class="fr">
+      <div class="fc"><div class="fl">公式サイトURL</div><input class="fi" id="fu" placeholder="https://..."/></div>
+      <div class="fc"><div class="fl">WikiリンクURL</div><input class="fi" id="fw" placeholder="https://..."/></div>
+    </div>
+    <div class="ff"><div class="fl">売上・規模情報</div><input class="fi" id="fsa" placeholder="累計DL数、最高売上など"/></div>
+    <div class="ff"><div class="fl">スクリーンショット画像URL（複数はカンマ区切り）</div><input class="fi" id="fimg" placeholder="https://..., https://..."/></div>
+    <div class="fbs"><button class="fcan" id="acan">キャンセル</button><button class="fok" id="aok">追加する</button></div>
+  </div>
+</div>
+
+<button class="fab" id="fab">＋</button>
+
+<script>
+const GAMES=[
+  {id:1,title:"グランブルーファンタジー",maker:"Cygames",year:2014,genre:"RPG",platform:"ブラウザ/iOS/Android",status:"active",desc:"壮大な空の世界を舞台にしたファンタジーRPG。累計4000万登録者を誇る日本最大級のソシャゲ。レイドバトルや多人数協力が特徴で、毎年の「古戦場」は業界屈指の盛り上がりを見せる。",vis:"vis-rpg",icon:"⚔️",sales:"累計4000万登録者・年間売上800億円超",officialUrl:"https://granbluefantasy.jp",wikiUrl:"https://game-a.jp/gbf/",screenshots:[]},
+  {id:2,title:"パズル&ドラゴンズ",maker:"GungHo Online Entertainment",year:2012,genre:"RPG",platform:"iOS/Android",status:"active",desc:"パズルとRPGを融合させた革命的なスマホゲーム。2013年には月間売上100億円を突破し、スマホゲーム市場を形成した歴史的タイトル。累計9600万DLを超える。",vis:"vis-puzzle",icon:"🔮",sales:"累計9600万DL・月間売上最高100億円超",officialUrl:"https://pad.gungho.jp",wikiUrl:"",screenshots:[]},
+  {id:3,title:"モンスターストライク",maker:"mixi",year:2013,genre:"アクション",platform:"iOS/Android",status:"active",desc:"弾いて飛ばす爽快なアクションRPG。最大4人でのリアルタイム協力が斬新で友達と遊ぶスタイルを確立。売上は累計1兆円を超えるモンスタータイトル。",vis:"vis-action",icon:"💥",sales:"累計1億DL超・売上累計1兆円超",officialUrl:"https://www.monster-strike.com",wikiUrl:"",screenshots:[]},
+  {id:4,title:"艦隊これくしょん",maker:"角川ゲームス/DMM",year:2013,genre:"ストラテジー",platform:"ブラウザ",status:"active",desc:"旧日本海軍の艦船を擬人化したブラウザSLG。登録ユーザー400万人超。アニメ・漫画・グッズ等の展開で同人文化とも深く結びついた国民的IP。",vis:"vis-strategy",icon:"⚓",sales:"登録者数400万人超",officialUrl:"https://www.dmm.com/netgame/feature/kancolle.html",wikiUrl:"https://wikiwiki.jp/kancolle/",screenshots:[]},
+  {id:5,title:"スクールアイドルフェスティバル",maker:"KLab",year:2013,genre:"リズム",platform:"iOS/Android",status:"ended",desc:"ラブライブ！を原作とするリズムゲーム。シリーズ累計5000万DLを超え、ラブライブ！ブームを支えた立役者。2023年3月にサービス終了。",vis:"vis-idol",icon:"🎵",sales:"累計5000万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:6,title:"デレステ",maker:"Cygames",year:2015,genre:"リズム",platform:"iOS/Android",status:"active",desc:"アイドルマスター シンデレラガールズのリズムゲーム。3Dライブ演出が圧倒的クオリティで、アイドルゲームの水準を引き上げた。190人以上のアイドルが登場。",vis:"vis-idol",icon:"✨",sales:"累計1500万DL超",officialUrl:"https://cinderella.idolmaster.jp/sl-stage/",wikiUrl:"https://wikiwiki.jp/deresute/",screenshots:[]},
+  {id:7,title:"Fate/Grand Order",maker:"TYPE-MOON/DELiGHTWORKS",year:2015,genre:"RPG",platform:"iOS/Android",status:"active",desc:"Fate/stay night原作のスマホRPG。豪華シナリオとキャラが世界中のファンを獲得し、売上は累計1兆円超。毎年の年越しイベントには熱狂的なファンが集まる。",vis:"vis-rpg",icon:"🗡️",sales:"累計売上1兆円超・世界累計DL3000万以上",officialUrl:"https://www.fate-go.jp",wikiUrl:"https://wikiwiki.jp/fategojp/",screenshots:[]},
+  {id:8,title:"刀剣乱舞",maker:"DMM/ニトロプラス",year:2015,genre:"ストラテジー",platform:"ブラウザ/iOS/Android",status:"active",desc:"歴史上の刀剣を擬人化したブラウザSLG。ミュージカル・舞台など2.5次元展開でも大成功。登録者数300万人超。",vis:"vis-strategy",icon:"⚔️",sales:"登録者数300万人超",officialUrl:"https://www.touken-ranbu.jp",wikiUrl:"https://wikiwiki.jp/touken-ranbu/",screenshots:[]},
+  {id:9,title:"バンドリ！ガールズバンドパーティ！",maker:"Craft Egg/Bushiroad",year:2017,genre:"リズム",platform:"iOS/Android",status:"active",desc:"女性バンドが中心の音楽リズムゲーム。3D演出ライブと充実した楽曲数が魅力。実際のバンド活動とメディアミックスを組み合わせた独自展開が話題に。",vis:"vis-rhythm",icon:"🎸",sales:"累計1500万DL超",officialUrl:"https://bang-dream.bushimo.jp",wikiUrl:"",screenshots:[]},
+  {id:10,title:"マギアレコード",maker:"Aniplex",year:2017,genre:"RPG",platform:"iOS/Android",status:"ended",desc:"魔法少女まどか☆マギカのスピンオフRPG。独自ストーリーと美麗なキャラクターが好評。アニメ化もされたが2022年7月にサービス終了。",vis:"vis-rpg",icon:"🌸",sales:"累計500万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:11,title:"ウマ娘 プリティーダービー",maker:"Cygames",year:2021,genre:"育成",platform:"iOS/Android",status:"active",desc:"競走馬を擬人化した育成シミュレーション。リリース直後から社会現象に。2021年の国内売上ランキング1位。3Dライブの迫力と深い育成システムが売り。",vis:"vis-idol",icon:"🏇",sales:"累計2000万DL超・2021年国内売上1位",officialUrl:"https://umamusume.jp",wikiUrl:"",screenshots:[]},
+  {id:12,title:"プロジェクトセカイ カラフルステージ！",maker:"Colorful Palette/Crypton",year:2020,genre:"リズム",platform:"iOS/Android",status:"active",desc:"初音ミクと仮想世界をテーマにしたリズムゲーム。ボカロ楽曲と独自キャラクターの物語が融合し、若年層を中心に圧倒的人気。",vis:"vis-rhythm",icon:"🎤",sales:"累計2500万DL超",officialUrl:"https://pjsekai.sega.jp",wikiUrl:"",screenshots:[]},
+  {id:13,title:"ドラゴンクエストウォーク",maker:"SQUARE ENIX/Colopl",year:2019,genre:"RPG",platform:"iOS/Android",status:"active",desc:"位置情報を使ったドラクエの歩くRPG。現実の街を歩いてモンスターを倒す体験が新鮮。リリース直後から国内トップセールスを記録。",vis:"vis-rpg",icon:"🐉",sales:"累計2000万DL超",officialUrl:"https://www.dragonquest.jp/walk/",wikiUrl:"",screenshots:[]},
+  {id:14,title:"白猫プロジェクト",maker:"Colopl",year:2014,genre:"アクション",platform:"iOS/Android",status:"active",desc:"スライド操作で動く爽快アクションRPG。当時のスマホゲームとしては圧倒的な画質クオリティで常識を変えた。累計4000万DL。",vis:"vis-action",icon:"🐱",sales:"累計4000万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:15,title:"タクトオーパス",maker:"DeNA/GoodSmile",year:2021,genre:"RPG",platform:"iOS/Android",status:"ended",desc:"ポスト黙示録の世界でムジクムと戦うRPG。アニメとゲームのメディアミックス展開を同時進行で行った意欲作。2023年11月サービス終了。",vis:"vis-rpg",icon:"🎼",sales:"非公開",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:16,title:"ラブライブ！スクールアイドルフェスティバル ALL STARS",maker:"KLab",year:2019,genre:"リズム",platform:"iOS/Android",status:"ended",desc:"ラブライブ！シリーズ3グループが共演するリズムRPG。充実したストーリーモードと豪華なオールスターで話題になった。2023年3月にサービス終了。",vis:"vis-idol",icon:"🌟",sales:"累計500万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:17,title:"アイドルマスター ミリオンライブ！シアターデイズ",maker:"バンダイナムコ",year:2017,genre:"リズム",platform:"iOS/Android",status:"active",desc:"アイドルマスター ミリオンライブ！のリズムゲーム。39人のアイドルが登場し、3D演出のライブが圧巻。コアなアイマスファンを中心に根強い人気。",vis:"vis-idol",icon:"🎭",sales:"累計500万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:18,title:"荒野行動",maker:"NetEase",year:2017,genre:"アクション",platform:"iOS/Android",status:"active",desc:"スマホ向けバトルロイヤルゲーム。若年層を中心に爆発的な人気を獲得。ストリーマー文化とも相性が良く視聴者数も多かった。",vis:"vis-action",icon:"🔫",sales:"日本累計2000万DL超",officialUrl:"",wikiUrl:"",screenshots:[]},
+  {id:19,title:"クラッシュ・ロワイヤル",maker:"Supercell",year:2016,genre:"ストラテジー",platform:"iOS/Android",status:"active",desc:"リアルタイム対戦ストラテジー。デッキを組んでタワーを攻める手軽さと奥深さが世界中で人気。日本でもeスポーツ文脈で注目された。",vis:"vis-strategy",icon:"🏰",sales:"世界累計DL5億超",officialUrl:"https://clashroyale.com",wikiUrl:"",screenshots:[]},
+  {id:20,title:"シャドウバース",maker:"Cygames",year:2016,genre:"カード",platform:"iOS/Android/PC",status:"active",desc:"デジタルカードゲームの大ヒット作。美麗なアニメ調イラストと爽快なバトルで人気を博し、世界累計3500万DL超。eスポーツ展開も積極的に行う。",vis:"vis-card",icon:"🃏",sales:"世界累計3500万DL超",officialUrl:"https://shadowverse.jp",wikiUrl:"",screenshots:[]},
+];
+
+let comments=JSON.parse(localStorage.getItem('sg_c')||'{}');
+let curGame=null,genre='all',sq='';
+
+function save(){localStorage.setItem('sg_c',JSON.stringify(comments))}
+function tot(){return Object.values(comments).reduce((a,c)=>a+c.length,0)}
+function gc(g){const m={'RPG':'tag-rpg','アクション':'tag-action','リズム':'tag-rhythm','ストラテジー':'tag-strategy','カード':'tag-card','アイドル':'tag-idol','育成':'tag-idol'};return m[g]||'tag-other'}
+function th(g){const c=gc(g);return`<span class="tag" style="background:var(--${c}-bg);color:var(--${c})">${g}</span>`}
+
+function updStats(){
+  const t=GAMES.length,a=GAMES.filter(g=>g.status==='active').length,e=GAMES.filter(g=>g.status==='ended').length,c=tot();
+  ['hc','ts1'].forEach(id=>document.getElementById(id).textContent=t);
+  document.getElementById('hcmt').textContent=c;
+  document.getElementById('ts2').textContent=a;
+  document.getElementById('ts3').textContent=e;
+  document.getElementById('ts4').textContent=c;
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if(id==='archive') renderArchive();
+  if(id==='timeline') renderTimeline();
+  if(id==='top') renderTop();
+}
+
+function renderTop(){
+  updStats();
+  const hl=GAMES.filter(g=>g.sales&&!g.sales.includes('非公開')).slice(0,6);
+  document.getElementById('hlg').innerHTML=hl.map(g=>`
+    <div class="hl-card" onclick="openGame(${g.id})">
+      <div class="hl-icon">${g.icon}</div>
+      <div>
+        <div class="hl-title">${g.title}</div>
+        <div class="hl-meta">${g.maker} · ${g.year}年</div>
+        <div class="hl-sales">${g.sales}</div>
+      </div>
+    </div>`).join('');
+  let all=[];
+  Object.entries(comments).forEach(([gid,list])=>{
+    const game=GAMES.find(g=>g.id==gid);
+    if(game) list.forEach(c=>all.push({...c,gt:game.title,gid:game.id}));
+  });
+  all=all.slice(-5).reverse();
+  document.getElementById('rcmt').innerHTML=all.length?all.map(c=>`
+    <div class="ci" style="cursor:pointer;margin-bottom:8px" onclick="openGame(${c.gid})">
+      <div class="ca">${c.name||'名無しさん'} · <span style="color:var(--accent)">${c.gt}</span> · ${c.date}</div>
+      <div class="cx">${c.text}</div>
+    </div>`).join(''):'<div style="font-size:13px;color:var(--text3)">まだ思い出が投稿されていません。</div>';
+}
+
+function renderArchive(){
+  const sort=document.getElementById('ss').value;
+  let list=[...GAMES];
+  if(sq){const q=sq.toLowerCase();list=list.filter(g=>g.title.toLowerCase().includes(q)||g.maker.toLowerCase().includes(q));}
+  if(genre!=='all') list=list.filter(g=>g.genre===genre);
+  if(sort==='year-desc') list.sort((a,b)=>b.year-a.year);
+  else if(sort==='year-asc') list.sort((a,b)=>a.year-b.year);
+  else list.sort((a,b)=>a.title.localeCompare(b.title,'ja'));
+  document.getElementById('ri').textContent=`${list.length}件のタイトル`;
+  const g=document.getElementById('gg');
+  if(!list.length){g.innerHTML='<div class="empty">該当するタイトルが見つかりませんでした</div>';return;}
+  g.innerHTML=list.map(g=>{
+    const cc=(comments[g.id]||[]).length;
+    return`<div class="gc" onclick="openGame(${g.id})">
+      <div class="cv ${g.vis}">
+        <span class="cs ${g.status==='active'?'sa':'se'}">${g.status==='active'?'運営中':'終了'}</span>
+        <span class="cyb">${g.year}</span>
+        ${g.icon}
+      </div>
+      <div class="cb">
+        <div class="ct">${g.title}</div>
+        <div class="cm">${g.maker}</div>
+        <div class="ctg">${th(g.genre)}<span class="tag" style="background:#f3f4f6;color:#374151">${g.platform}</span></div>
+        <div class="cd">${g.desc}</div>
+      </div>
+      <div class="cf">
+        <span>💬 ${cc}件の思い出</span>
+        <span>詳細 →</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline(){
+  const yrs={};
+  GAMES.forEach(g=>{if(!yrs[g.year])yrs[g.year]=[];yrs[g.year].push(g);});
+  const sy=Object.keys(yrs).map(Number).sort((a,b)=>b-a);
+  document.getElementById('tlb').innerHTML=sy.map(y=>`
+    <div class="yb">
+      <div class="yl">${y}年 <span class="yc">${yrs[y].length}タイトル</span></div>
+      <div class="tlc">
+        ${yrs[y].map(g=>`
+          <div class="tlcard" onclick="openGame(${g.id})">
+            <div class="tlic">${g.icon}</div>
+            <div class="tlin">
+              <div class="tlt">${g.title}</div>
+              <div class="tlm">${g.maker} · ${g.platform}</div>
+              <div class="tld">${g.desc}</div>
+            </div>
+            <div class="tlr">
+              ${th(g.genre)}
+              <span class="cs ${g.status==='active'?'sa':'se'}" style="position:static">${g.status==='active'?'運営中':'終了'}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function openGame(id){
+  const g=GAMES.find(x=>x.id===id);
+  if(!g) return;
+  curGame=g;
+  document.getElementById('mv').className='mv '+g.vis;
+  document.getElementById('mi').textContent=g.icon;
+  document.getElementById('mtt').textContent=g.title;
+  document.getElementById('mmr').innerHTML=`<span>📅 ${g.year}年</span><span>🏢 ${g.maker}</span><span>📱 ${g.platform}</span><span>${g.status==='active'?'🟢 運営中':'⚫ サービス終了'}</span>`;
+  document.getElementById('mtg').innerHTML=th(g.genre);
+  document.getElementById('mdesc').textContent=g.desc;
+  const info=[];
+  if(g.sales) info.push(['📊 売上・規模',g.sales]);
+  info.push(['📅 リリース年',g.year+'年'],['📱 プラットフォーム',g.platform],['🎮 ジャンル',g.genre]);
+  document.getElementById('ig').innerHTML=info.map(([l,v])=>`<div class="ib"><div class="ibl">${l}</div><div class="ibv">${v}</div></div>`).join('');
+  const links=[];
+  if(g.officialUrl) links.push(`<a class="el" href="${g.officialUrl}" target="_blank">🌐 公式サイト</a>`);
+  if(g.wikiUrl) links.push(`<a class="el" href="${g.wikiUrl}" target="_blank">📖 Wiki</a>`);
+  document.getElementById('ls').innerHTML=links.length?`<div class="lr">${links.join('')}</div>`:'';
+  const ss=g.screenshots||[];
+  document.getElementById('scs').innerHTML=ss.length?`<div class="mst">スクリーンショット</div><div class="scs">${ss.map(u=>`<img class="sc" src="${u}" alt="" onerror="this.style.display='none'">`).join('')}</div>`:'';
+  renderCmts(g.id);
+  document.getElementById('ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderCmts(id){
+  const list=comments[id]||[];
+  const el=document.getElementById('cmtl');
+  el.innerHTML=list.length?list.map(c=>`<div class="ci"><div class="ca">${c.name||'名無しさん'} · ${c.date}</div><div class="cx">${c.text}</div></div>`).join('')
+    :'<div style="font-size:12px;color:var(--text3);padding:8px 0">まだ思い出が投稿されていません。最初の一人になりましょう！</div>';
+}
+
+document.getElementById('csub').addEventListener('click',()=>{
+  const text=document.getElementById('ct').value.trim();
+  if(!text||!curGame) return;
+  const name=document.getElementById('cn').value.trim();
+  if(!comments[curGame.id]) comments[curGame.id]=[];
+  const now=new Date();
+  comments[curGame.id].push({name,text,date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`});
+  document.getElementById('ct').value='';document.getElementById('cn').value='';
+  save();renderCmts(curGame.id);updStats();
+});
+document.getElementById('mc').addEventListener('click',()=>{document.getElementById('ov').classList.remove('open');document.body.style.overflow='';});
+document.getElementById('ov').addEventListener('click',e=>{if(e.target===document.getElementById('ov')){document.getElementById('ov').classList.remove('open');document.body.style.overflow='';}});
+document.getElementById('search').addEventListener('input',e=>{sq=e.target.value;renderArchive();});
+document.getElementById('ss').addEventListener('change',renderArchive);
+document.querySelectorAll('.fb').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.fb').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');genre=b.dataset.genre;renderArchive();
+}));
+document.getElementById('fab').addEventListener('click',()=>document.getElementById('aov').classList.add('open'));
+document.getElementById('acan').addEventListener('click',()=>document.getElementById('aov').classList.remove('open'));
+document.getElementById('aov').addEventListener('click',e=>{if(e.target===document.getElementById('aov')) document.getElementById('aov').classList.remove('open');});
+document.getElementById('aok').addEventListener('click',()=>{
+  const title=document.getElementById('ft').value.trim(),maker=document.getElementById('fm').value.trim();
+  if(!title||!maker){alert('タイトルと発売元は必須です');return;}
+  const vm={'RPG':'vis-rpg','カード':'vis-card','アイドル':'vis-idol','アクション':'vis-action','リズム':'vis-rhythm','ストラテジー':'vis-strategy','育成':'vis-idol'};
+  const g2=document.getElementById('fg2').value.trim()||'RPG';
+  const imgs=document.getElementById('fimg').value.trim();
+  GAMES.push({id:Date.now(),title,maker,year:parseInt(document.getElementById('fy').value)||2020,genre:g2,
+    platform:document.getElementById('fp').value.trim()||'iOS/Android',status:document.getElementById('fst').value,
+    desc:document.getElementById('fd').value.trim()||'（説明なし）',vis:vm[g2]||'vis-default',icon:'🎮',
+    sales:document.getElementById('fsa').value.trim(),officialUrl:document.getElementById('fu').value.trim(),
+    wikiUrl:document.getElementById('fw').value.trim(),screenshots:imgs?imgs.split(',').map(s=>s.trim()).filter(Boolean):[]});
+  ['ft','fm','fy','fg2','fp','fd','fsa','fu','fw','fimg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('aov').classList.remove('open');
+  updStats();renderTop();
+  if(document.getElementById('page-archive').classList.contains('active')) renderArchive();
+  if(document.getElementById('page-timeline').classList.contains('active')) renderTimeline();
+});
+
+renderTop();
+</script>
+</body>
+</html>
